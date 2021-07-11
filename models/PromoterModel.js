@@ -24,6 +24,12 @@ const Promoter = new Schema({
       ref: 'Projects',
     },
   ],
+  payments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Payments',
+    },
+  ],
 });
 
 module.exports = mongoose.model('Promoters', Promoter);

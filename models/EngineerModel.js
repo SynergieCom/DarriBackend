@@ -15,6 +15,12 @@ const Engineer = extendSchema(UserSchema, {
       ref: 'Projects',
     },
   ],
+  payments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Payments',
+    },
+  ],
 });
 
 module.exports = mongoose.model('Engineers', Engineer);
