@@ -1,10 +1,9 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var ResetCode = new Schema({
-    Id: String,
-    Code:String
+const ResetCode = new Schema({
+  Id: String,
+  Code: String,
 });
 
-
-module.exports = mongoose.model("resetCode", ResetCode);
+module.exports = mongoose.model('resetCode', ResetCode);
