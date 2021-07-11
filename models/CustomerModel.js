@@ -10,7 +10,7 @@ var Customer = extendSchema(UserSchema, {
             ref: "Housing"
         }
     ],
-    Contarcts: [
+    Contarct: [
         {
             type: Schema.Types.ObjectId,
             ref: "Contracts"
