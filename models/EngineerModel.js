@@ -9,6 +9,8 @@ const Engineer = extendSchema(UserSchema, {
   Speciality: String,
   NbExperienceYears: Number,
   Cv: String,
+  Subscribed: Boolean,
+  SubscriptionExpirationDate: Date,
   projects: [
     {
       type: Schema.Types.ObjectId,

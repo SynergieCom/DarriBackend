@@ -9,6 +9,8 @@ const Architect = extendSchema(UserSchema, {
   Type: String,
   NbExperienceYears: Number,
   Cv: String,
+  Subscribed: Boolean,
+  SubscriptionExpirationDate: Date,
   projects: [
     {
       type: Schema.Types.ObjectId,
