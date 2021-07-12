@@ -10,8 +10,10 @@ const ResetCode = require('../models/ResetCode');
 const {sendResetPasswordEmail} = require('../mailer');
 const {contactUsEmail} = require('../mailer');
 
-/** Get All Users **/
+// eslint-disable-next-line max-len
+/** ********************************************************** CURD ************************************************************************* **/
 
+// Get All Users
 router.get('/usersAll', function(req, res, next) {
   User.find(function(err, data) {
     if (err) throw err;
@@ -19,8 +21,69 @@ router.get('/usersAll', function(req, res, next) {
   });
 });
 
-/** LOGIN Restful API for React **/
+// Find User By ID
+router.get('/:id', function(req, res, next) {
+  User.findById(req.params.id, function(err, data) {
+    if (err) throw err;
+    res.json(data);
+  });
+});
 
+/** Add User (Post Man) **/
+router.post('/', async function(req, res, next) {
+  const password = req.body.Password;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = new User({
+    Username: req.body.Username,
+    Cin: req.body.Cin,
+    FirstName: req.body.FirstName,
+    LastName: req.body.LastName,
+    Password: hashedPassword,
+    Email: req.body.Email,
+    PhoneNumber: req.body.PhoneNumber,
+    Address: {
+      Street: req.body.street,
+      City: req.body.city,
+      State: req.body.state,
+      ZipCode: req.body.ZipCode,
+    },
+    Role: req.body.Role,
+    img: req.body.img,
+  });
+  try {
+    await user.save();
+    res.send('Ajout');
+  } catch (error) {
+    res.send(error);
+  }
+});
+
+// Delete User By Id
+router.delete('/remove/:id', function(req, res, next) {
+  User.findByIdAndDelete(req.params.id, function(err, data) {
+    if (err) throw err;
+    res.send('Deleted');
+  });
+});
+
+// Delete All Users
+router.delete('/remove', function(req, res, next) {
+  User.deleteMany({})
+      .then((data) => {
+        res.send({
+          message: `${data.deletedCount} Users were deleted successfully!`,
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+          // eslint-disable-next-line max-len
+          err.message || 'Some error occurred while removing all tutorials.',
+        });
+      });
+});
+
+// LOGIN
 router.get('/', function(req, res, next) {
   const username = req.query.username;
   const password = req.query.password;
@@ -31,7 +94,7 @@ router.get('/', function(req, res, next) {
         if (err) throw err;
         if (data.length === 0) {
           return res.send('UserNotFound');
-          // eslint-disable-next-line max-len
+        // eslint-disable-next-line max-len
         } else if ((await bcrypt.compare(password, data[0].Password)) === false) {
           console.log('WrongPassword');
           return res.send('WrongPassword');
@@ -40,38 +103,6 @@ router.get('/', function(req, res, next) {
         }
       },
   );
-});
-
-/** Delete All Users **/
-router.delete('/remove', function(req, res, next) {
-  User.deleteMany({})
-      .then((data) => {
-        res.send({
-          message: `${data.deletedCount} Users were deleted successfully!`,
-        });
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-          err.message || 'Some error occurred while removing all tutorials.',
-        });
-      });
-});
-
-/** Delete All Users **/
-router.delete('/remove', function(req, res, next) {
-  User.deleteMany({})
-      .then((data) => {
-        res.send({
-          message: `${data.deletedCount} Users were deleted successfully!`,
-        });
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-          err.message || 'Some error occurred while removing all tutorials.',
-        });
-      });
 });
 
 /** LOGIN Restful API for FaceAPi Recognition with Email Account **/
@@ -86,26 +117,6 @@ router.get('/EmailFace', function(req, res, next) {
       res.json(data);
     }
   });
-});
-
-/** Add User (Post Man) **/
-
-router.post('/', async function(req, res, next) {
-  const password = req.body.Password;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({
-    Username: req.body.Username,
-    Password: hashedPassword,
-    Email: req.body.Email,
-    Role: req.body.Role,
-    img: req.body.img,
-  });
-  try {
-    user.save();
-    res.send('Ajout');
-  } catch (error) {
-    res.send(error);
-  }
 });
 
 /** Reset Password (All Users) **/
