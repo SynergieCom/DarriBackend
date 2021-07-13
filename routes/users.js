@@ -136,7 +136,7 @@ router.post('/resetPassword', async function(req, res, next) {
       const code = user[0]._id.toString().substr(20, 24);
       const newResetCode = new ResetCode({Id: user[0].RefUser, Code: code});
       await newResetCode.save();
-      sendResetPasswordEmail(
+      await sendResetPasswordEmail(
           user[0].Email,
           user[0].Username,
           user[0].RefUser,

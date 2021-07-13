@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const extendSchema = require('mongoose-extend-schema');
-const UserSchema = require('../models/UserModel').UserSchema;
+const UserSchema = require('../models/UserModel').User;
 
 const Engineer = extendSchema(UserSchema, {
   NationalEngineeringId: Number,

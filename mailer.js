@@ -28,7 +28,7 @@ exports.sendCustomerConfirmationEmail = function(Email, Username, id) {
     subject: 'Wamya - Activate Account',
     html: `
 
-        <h1>WAMYA</h1>
+        <h1>Darri</h1>
       <h3> Hello ${Username} </h3>
       // eslint-disable-next-line max-len
       <p>Thank you for registering into our Application. 
