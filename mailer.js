@@ -25,7 +25,7 @@ exports.sendCustomerConfirmationEmail = function(Email, Username, id) {
   const message = {
     from: process.env.GOOGLE_USER,
     to: Email,
-    subject: 'Wamya - Activate Account',
+    subject: 'Darri - Activate Account',
     html: `
 
         <h1>Darri</h1>
