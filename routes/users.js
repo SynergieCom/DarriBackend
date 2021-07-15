@@ -172,8 +172,6 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
           const newUser = new User({
             RefUser: id,
             Username: user[0].Username,
-            FirstName: user[0].FirstName,
-            LastName: user[0].LastName,
             Password: hashedPassword,
             Email: user[0].Email,
             Role: 'Customer',
@@ -194,8 +192,6 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
           const newUser = new User({
             RefUser: id,
             Username: user[0].Username,
-            FirstName: user[0].FirstName,
-            LastName: user[0].LastName,
             Password: hashedPassword,
             Email: user[0].Email,
             Role: 'Engineer',
@@ -216,8 +212,6 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
           const newUser = new User({
             RefUser: id,
             Username: user[0].Username,
-            FirstName: user[0].FirstName,
-            LastName: user[0].LastName,
             Password: hashedPassword,
             Email: user[0].Email,
             Role: 'Architect',
@@ -242,10 +236,51 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
   }
 });
 
+// Activate Customer
+router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
+  if (req.params.role === 'Customer') {
+    Customer.findById(req.params.id).then((c) => {
+      User.create(
+          {
+            RefUser: c._id,
+            Username: c.Username,
+            Password: c.Password,
+            Email: c.Email,
+            Role: 'Customer',
+            img: c.img,
+          },
+          function(err, user) {
+            if (err) throw err;
+            res.redirect(`${process.env.DOMAIN_REACT}/ActivatedAccount`);
+            res.end();
+          },
+      );
+    });
+  } else if (req.params.role === 'Architect') {
+    Architect.findById(req.params.id).then((c) => {
+      User.create(
+          {
+            RefUser: c._id,
+            Username: c.Username,
+            Password: c.Password,
+            Email: c.Email,
+            Role: 'Architect',
+            img: c.img,
+          },
+          function(err, user) {
+            if (err) throw err;
+            res.redirect(`${process.env.DOMAIN_REACT}/ActivatedAccount`);
+            res.end();
+          },
+      );
+    });
+  }
+});
+
 /** Contact Us **/
 router.post('/contactUs', async function(req, res, next) {
   const {Email, Username, Subject, Message} = req.body;
-  contactUsEmail(Email, Username, Subject, Message);
+  await contactUsEmail(Email, Username, Subject, Message);
   res.send('EmailSended');
 });
 

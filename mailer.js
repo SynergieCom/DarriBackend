@@ -21,7 +21,7 @@ function sendEmail(message) {
   });
 }
 
-exports.sendCustomerConfirmationEmail = function(Email, Username, id) {
+exports.sendConfirmationEmail = function(Email, Username, id, Role) {
   const message = {
     from: process.env.GOOGLE_USER,
     to: Email,
@@ -30,42 +30,15 @@ exports.sendCustomerConfirmationEmail = function(Email, Username, id) {
 
         <h1>Darri</h1>
       <h3> Hello ${Username} </h3>
-      // eslint-disable-next-line max-len
       <p>Thank you for registering into our Application. 
       Much Appreciated! Just one last step is laying ahead of you...</p>
       <p>To activate your account please follow
        this link: 
        <a target="_" 
-       href="${process.env.DOMAIN}/customers/ActivateCustomer/${id}">
+       href="${process.env.DOMAIN}/users/ActivateAccount/${id}/${Role}">
         Activate </a></p>
       <p>Cheers</p>
-      <p>Wamya Team</p>
-    `,
-  };
-  return sendEmail(message);
-};
-
-exports.sendCompanyConfirmationEmail = function(Email, Denomination, id) {
-  const message = {
-    from: process.env.GOOGLE_USER,
-    to: Email,
-    subject: 'Wamya - Activate Account',
-    html: `
-
-        <h1>WAMYA</h1>
-      <h3> Hello ${Denomination} </h3>
-      <p>Thank you for registering into our Application. 
-      Much Appreciated! Just one last step is laying ahead of you...</p>
-      <p>To activate your account please follow this
-       link: 
-       <a 
-       target="_" 
-       href="${process.env.DOMAIN}/entreprises/ActivateCompany/${id}">
-        Activate 
-        </a>
-      </p>
-      <p>Cheers</p>
-      <p>Wamya Team</p>
+      <p>Darri Team</p>
     `,
   };
   return sendEmail(message);
@@ -75,7 +48,7 @@ exports.sendResetPasswordEmail = (Email, Username, id, code) => {
   const message = {
     from: process.env.GOOGLE_USER,
     to: Email,
-    subject: 'Immobilier - Reset Password',
+    subject: 'Darri - Reset Password',
     html: `
       <h3>Hello ${Username} </h3>
       <p>You reset Code : <strong>${code}</strong></p>
@@ -84,24 +57,24 @@ exports.sendResetPasswordEmail = (Email, Username, id, code) => {
        href="${process.env.DOMAIN_REACT}/ResetNewPassword/${id}">Reset 
        Password Link</a></p>
       <p>Cheers,</p>
-      <p>Wamya Team</p>
+      <p>Darri Team</p>
     `,
   };
 
   return sendEmail(message);
 };
 
-exports.caymentDetailsEmail = (
+exports.paymentDetailsEmail = (
     Email,
     Username,
     amount,
-    nameoncard,
+    nameOnCard,
     cardNumber,
 ) => {
   const message = {
     from: process.env.GOOGLE_USER,
     to: Email,
-    subject: 'Wamya - Payment ',
+    subject: 'Darri - Payment ',
     html: `
       <h3>Hello ${Username} </h3>
       <p>Your payment was successful <strong> you paid ${
@@ -109,9 +82,9 @@ exports.caymentDetailsEmail = (
 } TND</strong></p>
       <p>With this Card :</p>
       <p>Name On Card :
-       ${nameoncard} Card Number : **** **** **** ${cardNumber}</p>
+       ${nameOnCard} Card Number : **** **** **** ${cardNumber}</p>
       <p>Cheers,</p>
-      <p>Wamya Team</p>
+      <p>Darri Team</p>
     `,
   };
 

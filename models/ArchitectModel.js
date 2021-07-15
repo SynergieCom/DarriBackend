@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const extendSchema = require('mongoose-extend-schema');
 const UserSchema = require('../models/UserModel').User;
+const Payments = require('../models/PaymentModel');
+const Projects = require('../models/ProjectModel');
 
 const Architect = extendSchema(UserSchema, {
   NationalEngineeringId: Number,
@@ -11,16 +13,16 @@ const Architect = extendSchema(UserSchema, {
   Cv: String,
   Subscribed: Boolean,
   SubscriptionExpirationDate: Date,
-  projects: [
+  Projects: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Projects',
+      ref: Projects,
     },
   ],
-  payments: [
+  Payments: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Payments',
+      ref: Payments,
     },
   ],
 });

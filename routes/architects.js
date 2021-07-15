@@ -1,7 +1,7 @@
 const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
-const Customer = require('../models/CustomerModel');
+const Architect = require('../models/ArchitectModel');
 const User = require('../models/UserModel').UserSchema;
 
 const {sendConfirmationEmail} = require('../mailer');
@@ -38,28 +38,28 @@ router.get('/', function(req, res, next) {
     lastName ?
     {LastName: {$regex: new RegExp(lastName), $options: 'i'}} :
     {};
-  Customer.find(condition, function(err, data) {
+  Architect.find(condition, function(err, data) {
     if (err) throw err;
     res.json(data);
-  }).populate('Contarcts');
+  }).populate('Payments Projects');
 });
 
 // Get customer By Id
 router.get('/:id', function(req, res, next) {
-  Customer.findById(req.params.id, function(err, data) {
+  Architect.findById(req.params.id, function(err, data) {
     if (err) throw err;
     res.json(data);
-  }).populate('Contarcts');
+  }).populate('Payments Projects');
 });
 
-// Add Customer
+// Add Architect
 router.post(
     '/Add',
     /* upload,*/ async function(req, res, next) {
       const obj = JSON.parse(JSON.stringify(req.body));
       console.log('Obj', obj);
       const hashedPassword = await bcrypt.hash(obj.Password, 10);
-      const newCustomer = {
+      const newArchitect = {
         Username: req.body.Username,
         Cin: req.body.Cin,
         FirstName: req.body.FirstName,
@@ -75,18 +75,26 @@ router.post(
         },
         Role: req.body.Role,
         img: req.body.img /* file.filename*/,
-        Contracts: [],
+        NationalEngineeringId: req.body.NationalEngineeringId,
+        Bio: req.body.Bio,
+        Type: req.body.Type,
+        NbExperienceYears: req.body.NbExperienceYears,
+        Cv: req.body.Cv,
+        Subscribed: false,
+        SubscriptionExpirationDate: new Date(),
+        Project: [],
+        Payments: [],
       };
-      const UserNameExist = await Customer.find({
-        Username: newCustomer.Username,
+      const UserNameExist = await Architect.find({
+        Username: newArchitect.Username,
       });
-      const CINExist = await Customer.find({Cin: newCustomer.Cin});
-      const EmailExist = await Customer.find({Email: newCustomer.Email});
+      const CINExist = await Architect.find({Cin: newArchitect.Cin});
+      const EmailExist = await Architect.find({Email: newArchitect.Email});
       const UsernameUserExist = await User.find({
-        Username: newCustomer.Username,
+        Username: newArchitect.Username,
       });
-      const EmailUserExist = await User.find({Email: newCustomer.Email});
 
+      const EmailUserExist = await User.find({Email: newArchitect.Email});
       if (UserNameExist.length !== 0 || UsernameUserExist.length !== 0) {
         console.log('UserNameExist');
         res.send('UserNameExist');
@@ -97,26 +105,26 @@ router.post(
         console.log('Email Exist');
         res.send('EmailExist');
       } else {
-        Customer.create(newCustomer, function(err, customer) {
+        Architect.create(newArchitect, function(err, architect) {
           if (err) throw err;
           sendConfirmationEmail(
-              newCustomer.Email,
-              newCustomer.Username,
-              customer._id,
-              'Customer',
+              newArchitect.Email,
+              newArchitect.Username,
+              architect._id,
+              'Architect',
           );
-          res.send(customer._id);
+          res.send(architect._id);
         });
       }
     },
 );
 
-//  Update Customer
+//  Update Architect
 router.put('/update/:id', upload, function(req, res, next) {
   const obj = JSON.parse(JSON.stringify(req.body));
   console.log('-> req.body', req.body);
   console.log('-> obj', obj);
-  const newCustomer = {
+  const newArchitect = {
     Username: req.body.Username,
     Cin: req.body.Cin,
     FirstName: req.body.FirstName,
@@ -129,19 +137,25 @@ router.put('/update/:id', upload, function(req, res, next) {
       State: req.body.Address.State,
       ZipCode: req.body.Address.ZipCode,
     },
+    Role: req.body.Role,
     img: req.body.img /* file.filename*/,
+    NationalEngineeringId: req.body.NationalEngineeringId,
+    Bio: req.body.Bio,
+    Type: req.body.Type,
+    NbExperienceYears: req.body.NbExperienceYears,
+    Cv: req.body.Cv,
   };
-  Customer.findByIdAndUpdate(
+  Architect.findByIdAndUpdate(
       req.params.id,
-      newCustomer,
+      newArchitect,
       async function(err, data) {
         if (err) throw err;
         await User.findOneAndUpdate(
             {RefUser: req.params.id},
             {
-              Username: newCustomer.Username,
-              Email: newCustomer.Email,
-              img: newCustomer.img,
+              Username: newArchitect.Username,
+              Email: newArchitect.Email,
+              img: newArchitect.img,
             },
         );
         console.log('UPDATED');
@@ -152,7 +166,7 @@ router.put('/update/:id', upload, function(req, res, next) {
 
 // Delete Customer By id
 router.delete('/remove/:id', async function(req, res, next) {
-  Customer.findByIdAndRemove(
+  Architect.findByIdAndRemove(
       req.params.id,
       req.body,
       async function(err, data) {
@@ -165,10 +179,10 @@ router.delete('/remove/:id', async function(req, res, next) {
 
 // Delete All Customers
 router.delete('/remove', function(req, res, next) {
-  Customer.deleteMany({})
+  Architect.deleteMany({})
       .then((data) => {
         res.send({
-          message: `${data.deletedCount} Customers were deleted successfully!`,
+          message: `${data.deletedCount} Architects were deleted successfully!`,
         });
       })
       .catch((err) => {
@@ -188,7 +202,7 @@ router.put('/updatePassword/:id', async function(req, res, next) {
     if ((await bcrypt.compare(currentPassword, user[0].Password)) === false) {
       return res.send('WrongPassword');
     } else {
-      Customer.findByIdAndUpdate(
+      Architect.findByIdAndUpdate(
           req.params.id,
           {Password: hashedPassword},
           async function(err, data) {
@@ -217,7 +231,7 @@ router.put('/DisableAccount/:id', async function(req, res, next) {
     if ((await bcrypt.compare(passwordD, user[0].Password)) === false) {
       return res.send('WrongPassword');
     } else {
-      Customer.findByIdAndRemove(req.params.id, async function(err, data) {
+      Architect.findByIdAndRemove(req.params.id, async function(err, data) {
         if (err) throw err;
         await User.remove({RefUser: req.params.id});
         console.log('UserDeleted');
@@ -227,6 +241,15 @@ router.put('/DisableAccount/:id', async function(req, res, next) {
   } catch (error) {
     res.send(error);
   }
+});
+
+// Update Architect Subscription
+router.put('/UpdateSubscription/:id', function(req, res, next) {
+  Architect.findByIdAndUpdate(req.params.id, req.body, function(err, data) {
+    if (err) throw err;
+    console.log('UPDATED');
+    res.send('UPDATED OK');
+  });
 });
 
 module.exports = router;
