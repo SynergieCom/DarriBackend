@@ -85,8 +85,8 @@ router.delete('/remove', function(req, res, next) {
 
 // LOGIN
 router.get('/', function(req, res, next) {
-  const username = req.query.username;
-  const password = req.query.password;
+  const username = req.body.username;
+  const password = req.body.password;
 
   User.find(
       {$or: [{Username: username}, {Email: username}]},
