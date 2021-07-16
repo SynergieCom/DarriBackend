@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const Payment = require('../models/PaymentModel');
 const Architect = require('../models/ArchitectModel');
-// const Engineer = require('../models/EngineerModel');
-// const Promoter = require('../models/PromoterModel');
+const Engineer = require('../models/EngineerModel');
+const Promoter = require('../models/PromoterModel');
 
 // Stripe Payment Config
 const stripe = require('stripe')(
@@ -45,11 +45,11 @@ router.get('/:id', function(req, res, next) {
   });
 });
 
-/** Add payment with update Customer's Payments 2 **/
-
-router.post('/addPaymentArchitect/:id', async function(req, res, next) {
+// Pay (Architect,Engineer,Promoter)
+router.post('/addPayment/:id', async function(req, res, next) {
   // const obj = JSON.parse(JSON.stringify(req.body));
   // const amount = req.query.amount;
+  const role = req.body.Role;
   const newPayment = {
     PaymentMethod: req.body.PaymentMethod,
     NameOnCard: req.body.NameOnCard,
@@ -65,44 +65,112 @@ router.post('/addPaymentArchitect/:id', async function(req, res, next) {
     SecurityCode: req.body.SecurityCode,
     ExpirationDate: req.body.ExpirationDate,
     Country: req.body.Country,
-    Amount: req.body.amount,
+    Amount: req.body.Amount,
     CreationDate: new Date(),
   };
 
   try {
     Payment.create(newPayment).then((p) => {
-      Architect.findByIdAndUpdate(
-          req.params.id,
-          {
-            $push: {Payments: p._id},
-            Subscribed: true,
-          },
-          {new: true, useFindAndModify: false},
-          async function(err, architect) {
-            if (err) {
-              console.log(err);
-            } else {
-              await paymentDetailsEmail(
-                  architect.Email,
-                  architect.Username,
-                  req.body.amount,
-                  obj.NameOnCard,
-                  obj.creditCard,
-              );
-              // Send Sms
-              // clientSMS.messages
-              //    .create({
-              //      // eslint-disable-next-line max-len
-              // eslint-disable-next-line max-len
-              //      body: `Congrats! ${architect.Username} your payed ${amount}`,
-              //      to: '+21620566666', // Text this number
-              //      from: '+14079179267', // From a valid Twilio number
-              //    })
-              //    .then((message) => console.log(message.sid));
-              console.log('add');
-            }
-          },
-      );
+      if (role === 'Architect') {
+        Architect.findByIdAndUpdate(
+            req.params.id,
+            {
+              $push: {Payments: p._id},
+              Subscribed: true,
+            },
+            {new: true, useFindAndModify: false},
+            async function(err, architect) {
+              if (err) {
+                console.log(err);
+              } else {
+                await paymentDetailsEmail(
+                    architect.Email,
+                    architect.Username,
+                    req.body.Amount,
+                    req.body.NameOnCard,
+                    req.body.creditCard,
+                );
+                // Send Sms
+                clientSMS.messages
+                    .create({
+                      // eslint-disable-next-line max-len
+                      // eslint-disable-next-line max-len
+                      body: `Congrats! ${architect.Username} your payed ${req.body.Amount}`,
+                      to: '+21620566666', // Text this number
+                      from: '+14079179267', // From a valid Twilio number
+                    })
+                    .then((message) => console.log(message.sid));
+                console.log('add');
+              }
+            },
+        );
+      } else if (role === 'Engineer') {
+        Engineer.findByIdAndUpdate(
+            req.params.id,
+            {
+              $push: {Payments: p._id},
+              Subscribed: true,
+            },
+            {new: true, useFindAndModify: false},
+            async function(err, engineer) {
+              if (err) {
+                console.log(err);
+              } else {
+                await paymentDetailsEmail(
+                    engineer.Email,
+                    engineer.Username,
+                    req.body.Amount,
+                    req.body.NameOnCard,
+                    req.body.creditCard,
+                );
+                // Send Sms
+                // clientSMS.messages
+                //    .create({
+                //      // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
+                //      body: `Congrats! ${architect.Username} your payed ${amount}`,
+                //      to: '+21620566666', // Text this number
+                //      from: '+14079179267', // From a valid Twilio number
+                //    })
+                //    .then((message) => console.log(message.sid));
+                console.log('add');
+              }
+            },
+        );
+      } else {
+        Promoter.findByIdAndUpdate(
+            req.params.id,
+            {
+              $push: {Payments: p._id},
+              Subscribed: true,
+            },
+            {new: true, useFindAndModify: false},
+            async function(err, promoter) {
+              if (err) {
+                console.log(err);
+              } else {
+                await paymentDetailsEmail(
+                    promoter.Email,
+                    promoter.Denomination,
+                    req.body.Amount,
+                    req.body.NameOnCard,
+                    req.body.creditCard,
+                );
+                // Send Sms
+                // clientSMS.messages
+                //    .create({
+                //      // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
+                //      body: `Congrats! ${architect.Username} your payed ${amount}`,
+                //      to: '+21620566666', // Text this number
+                //      from: '+14079179267', // From a valid Twilio number
+                //    })
+                //    .then((message) => console.log(message.sid));
+                console.log('add');
+              }
+            },
+        );
+      }
     });
     res.send('Ajout Payment Architect');
   } catch (error) {
