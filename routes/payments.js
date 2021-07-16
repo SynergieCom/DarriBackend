@@ -16,6 +16,7 @@ const stripe = require('stripe')(
 require('dotenv').config();
 const Twilio = require('twilio');
 const authToken = process.env.TWILIO_ACCOUNT_SID;
+// eslint-disable-next-line no-unused-vars
 const clientSMS = new Twilio('AC1c4a7e63a7c65e00cde37b7e422f4724', authToken);
 const {paymentDetailsEmail} = require('../mailer');
 
@@ -47,24 +48,24 @@ router.get('/:id', function(req, res, next) {
 /** Add payment with update Customer's Payments 2 **/
 
 router.post('/addPaymentArchitect/:id', async function(req, res, next) {
-  const obj = JSON.parse(JSON.stringify(req.body));
-  const amount = req.query.amount;
+  // const obj = JSON.parse(JSON.stringify(req.body));
+  // const amount = req.query.amount;
   const newPayment = {
-    PaymentMethod: obj.PaymentMethod,
-    NameOnCard: obj.NameOnCard,
-    Email: obj.Email,
+    PaymentMethod: req.body.PaymentMethod,
+    NameOnCard: req.body.NameOnCard,
+    Email: req.body.Email,
     Address: {
-      Street: obj.Street,
-      City: obj.City,
-      State: obj.State,
-      ZipCode: obj.ZipCode,
+      Street: req.body.Address.Street,
+      City: req.body.Address.City,
+      State: req.body.Address.State,
+      ZipCode: req.body.Address.ZipCode,
     },
-    creditCard: obj.creditCard,
-    CardType: obj.CardType,
-    SecurityCode: obj.SecurityCode,
-    ExpirationDate: obj.ExpirationDate,
-    Country: obj.Country,
-    Amount: amount,
+    creditCard: req.body.creditCard,
+    CardType: req.body.CardType,
+    SecurityCode: req.body.SecurityCode,
+    ExpirationDate: req.body.ExpirationDate,
+    Country: req.body.Country,
+    Amount: req.body.amount,
     CreationDate: new Date(),
   };
 
@@ -84,19 +85,20 @@ router.post('/addPaymentArchitect/:id', async function(req, res, next) {
               await paymentDetailsEmail(
                   architect.Email,
                   architect.Username,
-                  amount,
+                  req.body.amount,
                   obj.NameOnCard,
                   obj.creditCard,
               );
               // Send Sms
-              /* clientSMS.messages
-                  .create({
-                    // eslint-disable-next-line max-len
-                    body: `Congrats! ${architect.Username} your payed ${amount}`,
-                    to: '+21620566666', // Text this number
-                    from: '+14079179267', // From a valid Twilio number
-                  })
-                  .then((message) => console.log(message.sid));*/
+              // clientSMS.messages
+              //    .create({
+              //      // eslint-disable-next-line max-len
+              // eslint-disable-next-line max-len
+              //      body: `Congrats! ${architect.Username} your payed ${amount}`,
+              //      to: '+21620566666', // Text this number
+              //      from: '+14079179267', // From a valid Twilio number
+              //    })
+              //    .then((message) => console.log(message.sid));
               console.log('add');
             }
           },

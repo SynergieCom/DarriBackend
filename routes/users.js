@@ -6,6 +6,7 @@ const User = require('../models/UserModel').UserSchema;
 const Customer = require('../models/CustomerModel');
 const Engineer = require('../models/EngineerModel');
 const Architect = require('../models/ArchitectModel');
+const Promoter = require('../models/PromoterModel');
 const ResetCode = require('../models/ResetCode');
 const {sendResetPasswordEmail} = require('../mailer');
 const {contactUsEmail} = require('../mailer');
@@ -257,15 +258,51 @@ router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
       );
     });
   } else if (req.params.role === 'Architect') {
-    Architect.findById(req.params.id).then((c) => {
+    Architect.findById(req.params.id).then((a) => {
       User.create(
           {
-            RefUser: c._id,
-            Username: c.Username,
-            Password: c.Password,
-            Email: c.Email,
+            RefUser: a._id,
+            Username: a.Username,
+            Password: a.Password,
+            Email: a.Email,
             Role: 'Architect',
-            img: c.img,
+            img: a.img,
+          },
+          function(err, user) {
+            if (err) throw err;
+            res.redirect(`${process.env.DOMAIN_REACT}/ActivatedAccount`);
+            res.end();
+          },
+      );
+    });
+  } else if (req.params.role === 'Engineer') {
+    Engineer.findById(req.params.id).then((e) => {
+      User.create(
+          {
+            RefUser: e._id,
+            Username: e.Username,
+            Password: e.Password,
+            Email: e.Email,
+            Role: 'Engineer',
+            img: e.img,
+          },
+          function(err, user) {
+            if (err) throw err;
+            res.redirect(`${process.env.DOMAIN_REACT}/ActivatedAccount`);
+            res.end();
+          },
+      );
+    });
+  } else {
+    Promoter.findById(req.params.id).then((p) => {
+      User.create(
+          {
+            RefUser: p._id,
+            Username: p.ResponsibleName,
+            Password: p.Password,
+            Email: p.Email,
+            Role: 'Promoter',
+            img: p.img,
           },
           function(err, user) {
             if (err) throw err;
