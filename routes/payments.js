@@ -91,16 +91,16 @@ router.post('/addPayment/:id', async function(req, res, next) {
                     req.body.creditCard,
                 );
                 // Send Sms
-                clientSMS.messages
-                    .create({
-                      // eslint-disable-next-line max-len
-                      // eslint-disable-next-line max-len
-                      body: `Congrats! ${architect.Username} your payed ${req.body.Amount}`,
-                      to: '+21620566666', // Text this number
-                      from: '+14079179267', // From a valid Twilio number
-                    })
-                    .then((message) => console.log(message.sid));
-                console.log('add');
+                // clientSMS.messages
+                //   .create({
+                // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
+                //   body: `Congrats! ${architect.Username} your payed ${req.body.Amount}`,
+                // to: '+21620566666', // Text this number
+                //  from: '+14079179267', // From a valid Twilio number
+                // })
+                //  .then((message) => console.log(message.sid));
+                console.log('add Architect Payment');
               }
             },
         );
@@ -133,7 +133,7 @@ router.post('/addPayment/:id', async function(req, res, next) {
                 //      from: '+14079179267', // From a valid Twilio number
                 //    })
                 //    .then((message) => console.log(message.sid));
-                console.log('add');
+                console.log('add Engineer Payment');
               }
             },
         );
@@ -166,13 +166,13 @@ router.post('/addPayment/:id', async function(req, res, next) {
                 //      from: '+14079179267', // From a valid Twilio number
                 //    })
                 //    .then((message) => console.log(message.sid));
-                console.log('add');
+                console.log('add Promoter Payment');
               }
             },
         );
       }
     });
-    res.send('Ajout Payment Architect');
+    res.send('Ajout Payment Successfully ');
   } catch (error) {
     res.send(error);
   }

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const AddressSchema = require('../models/AddressModel').AddressSchema;
+const Payments = require('../models/PaymentModel');
+const Projects = require('../models/ProjectModel');
 
 const Promoter = new Schema({
   ResponsibleCin: Number,
@@ -18,16 +20,16 @@ const Promoter = new Schema({
   Subscribed: Boolean,
   SubscriptionExpirationDate: Date,
   img: String,
-  projects: [
+  Projects: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Projects',
+      ref: Projects,
     },
   ],
-  payments: [
+  Payments: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Payments',
+      ref: Payments,
     },
   ],
 });
