@@ -16,7 +16,7 @@ const Housing = new Schema({
   ConstructionYear: Date,
   RentalStartDate: Date,
   RentalFinishDate: Date,
-  PublishedDate: Date.now(),
+  PublishedDate: Date,
   imgCollection: {
     type: Array,
   },

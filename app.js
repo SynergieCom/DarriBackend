@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const config = require('./database/mongodb');
 const cors = require('cors');
 
+// Routers
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const customersRouter = require('./routes/customers');
@@ -16,6 +17,7 @@ const architectsRouter = require('./routes/architects');
 const engineersRouter = require('./routes/engineers');
 const promotersRouter = require('./routes/promoters');
 const paymentsRouter = require('./routes/payments');
+const housingsRouter = require('./routes/housings');
 
 const app = express();
 require('dotenv').config();
@@ -51,6 +53,7 @@ app.use('/architects', architectsRouter);
 app.use('/engineers', engineersRouter);
 app.use('/promoters', promotersRouter);
 app.use('/payments', paymentsRouter);
+app.use('/housings', housingsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
