@@ -128,8 +128,7 @@ router.post('/', upload, async function(req, res, next) {
   }
 });
 
-/** Update Prompter(REACT) **/
-
+// Update Prompter
 router.put('/update/:id', upload, function(req, res, next) {
   // const obj = JSON.parse(JSON.stringify(req.body));
   // console.log('Company : ', obj);
@@ -159,7 +158,7 @@ router.put('/update/:id', upload, function(req, res, next) {
       async function(err, data) {
         if (err) throw err;
         await User.findOneAndUpdate(
-            {Id: req.params.id},
+            {RefUser: req.params.id},
             {
               Username: newPromoter.ResponsibleName,
               Email: newPromoter.Email,
@@ -172,7 +171,7 @@ router.put('/update/:id', upload, function(req, res, next) {
   );
 });
 
-/** Delete All Promoters **/
+// Delete All Promoters
 router.delete('/remove', function(req, res, next) {
   Promoter.deleteMany({})
       .then((data) => {
@@ -188,7 +187,7 @@ router.delete('/remove', function(req, res, next) {
       });
 });
 
-/** Delete Promoter By id **/
+// Delete Promoter By id
 router.delete('/remove/:id', function(req, res, next) {
   Promoter.findByIdAndRemove(req.params.id, req.body, function(err, data) {
     if (err) throw err;
@@ -197,6 +196,7 @@ router.delete('/remove/:id', function(req, res, next) {
   });
 });
 
+// Update Password
 router.put('/updatePassword/:id', async function(req, res, next) {
   const {currentPassword, password} = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -226,8 +226,7 @@ router.put('/updatePassword/:id', async function(req, res, next) {
   }
 });
 
-/** Disable Account Customer **/
-
+// Disable Account Customer
 router.put('/DisableAccount/:id', async function(req, res, next) {
   const {passwordD} = req.body;
   try {

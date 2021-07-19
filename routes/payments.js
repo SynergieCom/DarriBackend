@@ -20,8 +20,7 @@ const authToken = process.env.TWILIO_ACCOUNT_SID;
 const clientSMS = new Twilio('AC1c4a7e63a7c65e00cde37b7e422f4724', authToken);
 const {paymentDetailsEmail} = require('../mailer');
 
-/** Search Payments By NameOnCard and PaymentMethod **/
-
+// Search Payments By NameOnCard and PaymentMethod
 router.get('/', function(req, res, next) {
   const nameOnCard = req.query.NameOnCard;
   const paymentMethod = req.query.paymentMethod;
@@ -36,8 +35,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-/** Get Payment By Id **/
-
+// Get Payment By Id
 router.get('/:id', function(req, res, next) {
   Payment.findById(req.params.id, function(err, data) {
     if (err) throw err;
