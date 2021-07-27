@@ -54,11 +54,11 @@ exports.sendResetPasswordEmail = (Email, Username, id, code) => {
       <p>You reset Code : <strong>${code}</strong></p>
       <p>To reset your password 
       please follow this link: <a target="_"
-       href="${process.env.DOMAIN_REACT}/ResetNewPassword/${id}">Reset 
+       href="${process.env.DOMAIN_REACT}/ResetNewPassword?id=${id}">Reset 
        Password Link</a></p>
       <p>Cheers,</p>
       <p>Darri Team</p>
-    `,
+    `, z,
   };
 
   return sendEmail(message);

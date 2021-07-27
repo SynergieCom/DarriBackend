@@ -14,6 +14,7 @@ const User = new Schema({
   Role: String,
   Address: AddressSchema,
   img: String,
+  ActiveDate: Date,
 });
 
 const UserSchema = mongoose.model('Users', User);

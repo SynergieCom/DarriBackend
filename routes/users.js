@@ -43,13 +43,14 @@ router.post('/', async function(req, res, next) {
     Email: req.body.Email,
     PhoneNumber: req.body.PhoneNumber,
     Address: {
-      Street: req.body.street,
-      City: req.body.city,
-      State: req.body.state,
-      ZipCode: req.body.ZipCode,
+      Street: req.body.Address.street,
+      City: req.body.Address.city,
+      State: req.body.Address.state,
+      ZipCode: req.body.Address.ZipCode,
     },
     Role: req.body.Role,
     img: req.body.img,
+    ActiveDate: Date(),
   });
   try {
     await user.save();
@@ -86,9 +87,8 @@ router.delete('/remove', function(req, res, next) {
 
 // LOGIN
 router.get('/', function(req, res, next) {
-  const username = req.body.username;
-  const password = req.body.password;
-
+  const username = req.query.username;
+  const password = req.query.password;
   User.find(
       {$or: [{Username: username}, {Email: username}]},
       async function(err, data) {
@@ -177,6 +177,7 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
             Email: user[0].Email,
             Role: 'Customer',
             img: user[0].img,
+            ActiveDate: Date(),
           });
           await User.deleteOne({RefUser: id});
           await User.create(newUser);
@@ -197,6 +198,7 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
             Email: user[0].Email,
             Role: 'Engineer',
             img: user[0].img,
+            ActiveDate: Date(),
           });
           await User.deleteOne({RefUser: id});
           await User.create(newUser);
@@ -217,6 +219,7 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
             Email: user[0].Email,
             Role: 'Architect',
             img: user[0].img,
+            ActiveDate: Date(),
           });
           await User.deleteOne({RefUser: id});
           await User.create(newUser);
@@ -237,7 +240,7 @@ router.post('/resetPassword/confirmation', async function(req, res, next) {
   }
 });
 
-// Activate Customer
+// Activate Users
 router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
   if (req.params.role === 'Customer') {
     Customer.findById(req.params.id).then((c) => {
@@ -249,6 +252,7 @@ router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
             Email: c.Email,
             Role: 'Customer',
             img: c.img,
+            ActiveDate: Date(),
           },
           function(err, user) {
             if (err) throw err;
@@ -267,6 +271,7 @@ router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
             Email: a.Email,
             Role: 'Architect',
             img: a.img,
+            ActiveDate: Date(),
           },
           function(err, user) {
             if (err) throw err;
@@ -285,6 +290,7 @@ router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
             Email: e.Email,
             Role: 'Engineer',
             img: e.img,
+            ActiveDate: Date(),
           },
           function(err, user) {
             if (err) throw err;
@@ -303,6 +309,7 @@ router.get('/ActivateAccount/:id/:role', async function(req, res, next) {
             Email: p.Email,
             Role: 'Promoter',
             img: p.img,
+            ActiveDate: Date(),
           },
           function(err, user) {
             if (err) throw err;
