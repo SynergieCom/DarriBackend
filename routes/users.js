@@ -11,6 +11,24 @@ const ResetCode = require('../models/ResetCode');
 const {sendResetPasswordEmail} = require('../mailer');
 const {contactUsEmail} = require('../mailer');
 
+const multer = require('multer');
+const path = require('path');
+router.use(express.static(__dirname + './public/'));
+// router.use(express.static(__dirname+"./public/"));
+if (typeof localStorage === 'undefined' || localStorage === null) {
+  const LocalStorage = require('node-localstorage').LocalStorage;
+  localStorage = new LocalStorage('./scratch');
+}
+const Storage = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({
+  storage: Storage,
+}).single('img');
+
 // eslint-disable-next-line max-len
 /** ********************************************************** CURD ************************************************************************* **/
 
@@ -31,33 +49,35 @@ router.get('/:id', function(req, res, next) {
 });
 
 /** Add User (Post Man) **/
-router.post('/', async function(req, res, next) {
-  const password = req.body.Password;
+router.post('/', upload, async function(req, res, next) {
+  const obj = JSON.parse(JSON.stringify(req.body));
+  console.log('Obj', obj);
+  const password = obj.Password;
+  console.log('-> ', obj.Address);
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({
-    Username: req.body.Username,
-    Cin: req.body.Cin,
-    FirstName: req.body.FirstName,
-    LastName: req.body.LastName,
+  const newUser = new User({
+    Username: obj.Username,
+    Cin: obj.Cin,
+    FirstName: obj.FirstName,
+    LastName: obj.LastName,
     Password: hashedPassword,
-    Email: req.body.Email,
-    PhoneNumber: req.body.PhoneNumber,
+    Email: obj.Email,
+    PhoneNumber: obj.PhoneNumber,
     Address: {
-      Street: req.body.Address.street,
-      City: req.body.Address.city,
-      State: req.body.Address.state,
-      ZipCode: req.body.Address.ZipCode,
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-    Role: req.body.Role,
-    img: req.body.img,
+    Role: obj.Role,
+    img: req.file.filename,
     ActiveDate: Date(),
   });
-  try {
-    await user.save();
-    res.send('Ajout');
-  } catch (error) {
-    res.send(error);
-  }
+
+  User.create(newUser, function(err, customer) {
+    if (err) throw err;
+    res.send(customer._id);
+  });
 });
 
 // Delete User By Id
@@ -143,7 +163,6 @@ router.post('/resetPassword', async function(req, res, next) {
           user[0].RefUser,
           code,
       );
-
       res.send('EmailSended');
     }
   } catch (error) {

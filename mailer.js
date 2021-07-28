@@ -58,7 +58,7 @@ exports.sendResetPasswordEmail = (Email, Username, id, code) => {
        Password Link</a></p>
       <p>Cheers,</p>
       <p>Darri Team</p>
-    `, z,
+    `,
   };
 
   return sendEmail(message);
