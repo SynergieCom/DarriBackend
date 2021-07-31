@@ -53,7 +53,6 @@ router.post('/', upload, async function(req, res, next) {
   const obj = JSON.parse(JSON.stringify(req.body));
   console.log('Obj', obj);
   const password = obj.Password;
-  console.log('-> ', obj.Address);
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({
     Username: obj.Username,
@@ -77,6 +76,31 @@ router.post('/', upload, async function(req, res, next) {
   User.create(newUser, function(err, customer) {
     if (err) throw err;
     res.send(customer._id);
+  });
+});
+
+//  Update User
+router.put('/update/:id', upload, function(req, res, next) {
+  const obj = JSON.parse(JSON.stringify(req.body));
+  const newUser = {
+    Username: obj.Username,
+    Cin: obj.Cin,
+    FirstName: obj.FirstName,
+    LastName: obj.LastName,
+    Email: obj.Email,
+    PhoneNumber: obj.PhoneNumber,
+    Address: {
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
+    },
+    img: req.file.filename,
+    Role: obj.Role,
+  };
+  User.findByIdAndUpdate(obj.Id, newUser, function(err, data) {
+    if (err) console.log(err);
+    res.json(newUser);
   });
 });
 
