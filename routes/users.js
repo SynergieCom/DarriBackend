@@ -371,4 +371,28 @@ router.post('/contactUs', async function(req, res, next) {
   res.send('EmailSended');
 });
 
+// Update Password Customer
+router.put('/updatePassword/:id', async function(req, res, next) {
+  const {currentPassword, password} = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const user = await User.find({_id: req.params.id});
+    if ((await bcrypt.compare(currentPassword, user[0].Password)) === false) {
+      return res.send('WrongPassword');
+    } else {
+      User.findByIdAndUpdate(
+          req.params.id,
+          {Password: hashedPassword},
+          async function(err, data) {
+            if (err) throw err;
+            console.log('UPDATED');
+            return res.send('PasswordUpdated');
+          },
+      );
+    }
+  } catch (error) {
+    res.send(error);
+  }
+});
+
 module.exports = router;
