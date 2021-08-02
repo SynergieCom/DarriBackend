@@ -48,6 +48,16 @@ router.get('/:id', function(req, res, next) {
   });
 });
 
+router.get('/loginface/:id', function(req, res, next) {
+  User.findById(req.params.id, function(err, data) {
+    if (err) throw err;
+    if (data.length === 0) {
+      return res.send('UserNotFound');
+    }
+    res.json(data);
+  });
+});
+
 /** Add User (Post Man) **/
 router.post('/', upload, async function(req, res, next) {
   const obj = JSON.parse(JSON.stringify(req.body));
