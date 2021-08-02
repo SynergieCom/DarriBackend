@@ -9,7 +9,7 @@ const Architect = require('../models/ArchitectModel');
 const Promoter = require('../models/PromoterModel');
 const ResetCode = require('../models/ResetCode');
 const {sendResetPasswordEmail} = require('../mailer');
-const {contactUsEmail} = require('../mailer');
+const {contactUsEmail, welcomeAdminEditorEmail} = require('../mailer');
 
 const multer = require('multer');
 const path = require('path');
@@ -75,6 +75,12 @@ router.post('/', upload, async function(req, res, next) {
 
   User.create(newUser, function(err, customer) {
     if (err) throw err;
+    welcomeAdminEditorEmail(
+        customer.Email,
+        customer.Username,
+        obj.Password,
+        customer.Role,
+    );
     res.send(customer._id);
   });
 });
@@ -389,6 +395,25 @@ router.put('/updatePassword/:id', async function(req, res, next) {
             return res.send('PasswordUpdated');
           },
       );
+    }
+  } catch (error) {
+    res.send(error);
+  }
+});
+
+// Disable Account User
+router.put('/DisableAccount/:id', async function(req, res, next) {
+  const {password} = req.body;
+  try {
+    const user = await User.find({_id: req.params.id});
+    if ((await bcrypt.compare(password, user[0].Password)) === false) {
+      return res.send('WrongPassword');
+    } else {
+      User.findByIdAndRemove(req.params.id, async function(err, data) {
+        if (err) throw err;
+        console.log('UserDeleted');
+        return res.send('Deleted');
+      });
     }
   } catch (error) {
     res.send(error);

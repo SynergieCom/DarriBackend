@@ -104,3 +104,22 @@ exports.contactUsEmail = (Email, Username, Subject, Message) => {
 
   return sendEmail(message);
 };
+
+exports.welcomeAdminEditorEmail = (Email, Username, Password, Role) => {
+  const message = {
+    from: process.env.GOOGLE_USER,
+    to: Email,
+    subject: `DARRI - Congratulations you Are An ${Role}`,
+    html: `
+      <h3>Welcome ${Username} </h3>
+      <p>
+      we're glad to inform you that you are joined our team as an  ${Role}
+      <br/>You Can Sing In to Your Account via 
+      <br/>Login : <strong> ${Username} / ${Email} </strong>
+      <br/>Password: <strong>${Password}</strong>
+      </p>
+    `,
+  };
+
+  return sendEmail(message);
+};
