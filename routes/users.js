@@ -12,6 +12,7 @@ const {sendResetPasswordEmail} = require('../mailer');
 const {contactUsEmail, welcomeAdminEditorEmail} = require('../mailer');
 const {OAuth2Client} = require('google-auth-library');
 const fetch = require('node-fetch');
+const mongoose = require('mongoose');
 
 const multer = require('multer');
 const path = require('path');
@@ -214,6 +215,32 @@ router.get('/loginWithGoogle/:Tokenid', function(req, res, next) {
           });
         } else {
           res.send('aasbat');
+        }
+      });
+});
+
+/** LOGIN WITH Facebook **/
+router.get('/loginWithFacebook/:accessToken/', async function(req, res, next) {
+  const accessToken = req.params.accessToken;
+  const userID = req.query.userID;
+  console.log('-> accessToken', accessToken);
+  console.log('-> userID', userID);
+  const urlGraphFacebook = `https://graph.facebook.com/v2.11/${userID}/?fields=id,name,email&access_token=${accessToken}`;
+  fetch(urlGraphFacebook, {
+    method: 'GET',
+  })
+      .then((res) => res.json())
+      .then((json) => {
+        const {email, name} = json;
+        if (email != null) {
+          User.find({Email: email}, async function(err, data) {
+            if (err) throw err;
+            if (data.length === 0) {
+              return res.send('UserNotFound');
+            } else {
+              res.json(data);
+            }
+          });
         }
       });
 });
