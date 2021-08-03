@@ -10,6 +10,8 @@ const Promoter = require('../models/PromoterModel');
 const ResetCode = require('../models/ResetCode');
 const {sendResetPasswordEmail} = require('../mailer');
 const {contactUsEmail, welcomeAdminEditorEmail} = require('../mailer');
+const {OAuth2Client} = require('google-auth-library');
+const fetch = require('node-fetch');
 
 const multer = require('multer');
 const path = require('path');
@@ -28,6 +30,11 @@ const Storage = multer.diskStorage({
 const upload = multer({
   storage: Storage,
 }).single('img');
+
+// eslint-disable-next-line max-len
+const client = new OAuth2Client(
+    '211469900619-2p5n681boi9123tb9tqohej9b5186mr6.apps.googleusercontent.com',
+);
 
 // eslint-disable-next-line max-len
 /** ********************************************************** CURD ************************************************************************* **/
@@ -178,6 +185,37 @@ router.get('/EmailFace', function(req, res, next) {
       res.json(data);
     }
   });
+});
+
+/** LOGIN WITH GOOGLE **/
+router.get('/loginWithGoogle/:Tokenid', function(req, res, next) {
+  const tokenId = req.params.Tokenid;
+  console.log('-> tokenId', tokenId);
+  client
+      .verifyIdToken({
+        idToken: tokenId,
+        audience:
+        // eslint-disable-next-line max-len
+        '211469900619-2p5n681boi9123tb9tqohej9b5186mr6.apps.googleusercontent.com',
+      })
+      .then((response) => {
+      // eslint-disable-next-line camelcase
+        const {email_verified, email} = response.getPayload();
+        // eslint-disable-next-line camelcase
+        if (email_verified) {
+          console.log('res', email);
+          User.find({Email: email}, async function(err, data) {
+            if (err) throw err;
+            if (data.length === 0) {
+              return res.send('UserNotFound');
+            } else {
+              res.json(data);
+            }
+          });
+        } else {
+          res.send('aasbat');
+        }
+      });
 });
 
 /** Reset Password (All Users) **/
