@@ -12,7 +12,6 @@ const {sendResetPasswordEmail} = require('../mailer');
 const {contactUsEmail, welcomeAdminEditorEmail} = require('../mailer');
 const {OAuth2Client} = require('google-auth-library');
 const fetch = require('node-fetch');
-const mongoose = require('mongoose');
 
 const multer = require('multer');
 const path = require('path');
@@ -231,7 +230,7 @@ router.get('/loginWithFacebook/:accessToken/', async function(req, res, next) {
   })
       .then((res) => res.json())
       .then((json) => {
-        const {email, name} = json;
+        const {email} = json;
         if (email != null) {
           User.find({Email: email}, async function(err, data) {
             if (err) throw err;
