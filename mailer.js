@@ -117,6 +117,10 @@ exports.welcomeAdminEditorEmail = (Email, Username, Password, Role) => {
       <br/>You Can Sing In to Your Account via 
       <br/>Login : <strong> ${Username} / ${Email} </strong>
       <br/>Password: <strong>${Password}</strong>
+      <br/>
+      <small>
+      PS : Feel Free to Update your password and your Profile picture 
+      </small>
       </p>
     `,
   };

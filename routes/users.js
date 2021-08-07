@@ -15,6 +15,7 @@ const fetch = require('node-fetch');
 
 const multer = require('multer');
 const path = require('path');
+const Console = require('console');
 router.use(express.static(__dirname + './public/'));
 // router.use(express.static(__dirname+"./public/"));
 if (typeof localStorage === 'undefined' || localStorage === null) {
@@ -69,14 +70,11 @@ router.get('/loginface/:id', function(req, res, next) {
 router.post('/', upload, async function(req, res, next) {
   const obj = JSON.parse(JSON.stringify(req.body));
   console.log('Obj', obj);
-  const password = obj.Password;
-  const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({
     Username: obj.Username,
     Cin: obj.Cin,
     FirstName: obj.FirstName,
     LastName: obj.LastName,
-    Password: hashedPassword,
     Email: obj.Email,
     PhoneNumber: obj.PhoneNumber,
     Address: {
@@ -86,19 +84,32 @@ router.post('/', upload, async function(req, res, next) {
       ZipCode: obj.ZipCode,
     },
     Role: obj.Role,
-    img: req.file.filename,
+    img: req.file?.filename,
     ActiveDate: Date(),
   });
 
-  User.create(newUser, function(err, customer) {
-    if (err) throw err;
-    welcomeAdminEditorEmail(
-        customer.Email,
-        customer.Username,
-        obj.Password,
-        customer.Role,
-    );
-    res.send(customer._id);
+  User.create(newUser, async function(err, user) {
+    try {
+      const password =
+        user.FirstName + user.LastName + user._id.toString().substr(20, 24);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await User.findByIdAndUpdate(
+          user._id,
+          {Password: hashedPassword},
+          function(err, res) {
+            welcomeAdminEditorEmail(
+                user.Email,
+                user.Username,
+                password,
+                user.Role,
+            );
+          },
+      );
+      res.send(user._id);
+    } catch (err) {
+      console.log('-> e', err);
+      res.send(err);
+    }
   });
 });
 
@@ -118,7 +129,7 @@ router.put('/update/:id', upload, function(req, res, next) {
       State: obj.State,
       ZipCode: obj.ZipCode,
     },
-    img: req.file.filename,
+    img: req.file?.filename,
     Role: obj.Role,
   };
   User.findByIdAndUpdate(obj.Id, newUser, function(err, data) {
