@@ -53,63 +53,61 @@ router.get('/:id', function(req, res, next) {
 });
 
 // Add Customer
-router.post(
-    '/Add',
-    /* upload,*/ async function(req, res, next) {
-      const obj = JSON.parse(JSON.stringify(req.body));
-      console.log('Obj', obj);
-      const hashedPassword = await bcrypt.hash(obj.Password, 10);
-      const newCustomer = {
-        Username: req.body.Username,
-        Cin: req.body.Cin,
-        FirstName: req.body.FirstName,
-        LastName: req.body.LastName,
-        Password: hashedPassword,
-        Email: req.body.Email,
-        PhoneNumber: req.body.PhoneNumber,
-        Address: {
-          Street: req.body.Address.Street,
-          City: req.body.Address.City,
-          State: req.body.Address.State,
-          ZipCode: req.body.Address.ZipCode,
-        },
-        Role: req.body.Role,
-        img: req.body.img /* file.filename*/,
-        Contracts: [],
-      };
-      const UserNameExist = await Customer.find({
-        Username: newCustomer.Username,
-      });
-      const CINExist = await Customer.find({Cin: newCustomer.Cin});
-      const EmailExist = await Customer.find({Email: newCustomer.Email});
-      const UsernameUserExist = await User.find({
-        Username: newCustomer.Username,
-      });
-      const EmailUserExist = await User.find({Email: newCustomer.Email});
-
-      if (UserNameExist.length !== 0 || UsernameUserExist.length !== 0) {
-        console.log('UserNameExist');
-        res.send('UserNameExist');
-      } else if (CINExist.length !== 0) {
-        console.log('CIN Exist');
-        res.send('CinExist');
-      } else if (EmailExist.length !== 0 || EmailUserExist.length !== 0) {
-        console.log('Email Exist');
-        res.send('EmailExist');
-      } else {
-        Customer.create(newCustomer, function(err, customer) {
-          if (err) throw err;
-          sendConfirmationEmail(
-              newCustomer.Email,
-              newCustomer.Username,
-              customer._id,
-              'Customer',
-          );
-          res.send(customer._id);
-        });
-      }
+router.post('/Add', upload, async function(req, res, next) {
+  const obj = JSON.parse(JSON.stringify(req.body));
+  console.log('Obj', obj);
+  const hashedPassword = await bcrypt.hash(obj.Password, 10);
+  const newCustomer = {
+    Username: obj.Username,
+    Cin: obj.Cin,
+    FirstName: obj.FirstName,
+    LastName: obj.LastName,
+    Email: obj.Email,
+    Password: hashedPassword,
+    PhoneNumber: obj.PhoneNumber,
+    Address: {
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-);
+    Role: obj.Role,
+    img: req.file.filename,
+    ActiveDate: Date(),
+    Contracts: [],
+  };
+  const UserNameExist = await Customer.find({
+    Username: newCustomer.Username,
+  });
+  const CINExist = await Customer.find({Cin: newCustomer.Cin});
+  const EmailExist = await Customer.find({Email: newCustomer.Email});
+  const UsernameUserExist = await User.find({
+    Username: newCustomer.Username,
+  });
+  const EmailUserExist = await User.find({Email: newCustomer.Email});
+
+  if (UserNameExist.length !== 0 || UsernameUserExist.length !== 0) {
+    console.log('UserNameExist');
+    res.send('UserNameExist');
+  } else if (CINExist.length !== 0) {
+    console.log('CIN Exist');
+    res.send('CinExist');
+  } else if (EmailExist.length !== 0 || EmailUserExist.length !== 0) {
+    console.log('Email Exist');
+    res.send('EmailExist');
+  } else {
+    Customer.create(newCustomer, function(err, customer) {
+      if (err) throw err;
+      sendConfirmationEmail(
+          newCustomer.Email,
+          newCustomer.Username,
+          customer._id,
+          'Customer',
+      );
+      res.send(customer._id);
+    });
+  }
+});
 
 //  Update Customer
 router.put('/update/:id', upload, function(req, res, next) {

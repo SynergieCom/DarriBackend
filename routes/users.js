@@ -15,7 +15,7 @@ const fetch = require('node-fetch');
 
 const multer = require('multer');
 const path = require('path');
-const Console = require('console');
+
 router.use(express.static(__dirname + './public/'));
 // router.use(express.static(__dirname+"./public/"));
 if (typeof localStorage === 'undefined' || localStorage === null) {
@@ -129,7 +129,7 @@ router.put('/update/:id', upload, function(req, res, next) {
       State: obj.State,
       ZipCode: obj.ZipCode,
     },
-    img: req.file?.filename,
+    img: req.file.filename,
     Role: obj.Role,
   };
   User.findByIdAndUpdate(obj.Id, newUser, function(err, data) {

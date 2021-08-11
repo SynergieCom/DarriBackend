@@ -14,6 +14,8 @@ const User = new Schema({
   Role: String,
   Address: AddressSchema,
   img: String,
+  Gender: String,
+  DayOfBirth: String,
   ActiveDate: Date,
 });
 
