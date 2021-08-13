@@ -74,6 +74,8 @@ router.post('/Add', upload, async function(req, res, next) {
     Role: obj.Role,
     img: req.file.filename,
     ActiveDate: Date(),
+    Gender: obj.Gender,
+    DayOfBirth: obj.DayOfBirth,
     Contracts: [],
   };
   const UserNameExist = await Customer.find({
