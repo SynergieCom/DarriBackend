@@ -9,6 +9,8 @@ const bcrypt = require('bcrypt');
 
 const multer = require('multer');
 const path = require('path');
+
+// eslint-disable-next-line no-unused-vars
 const {LocalStorage} = require('node-localstorage');
 router.use(express.static(__dirname + './public/'));
 // router.use(express.static(__dirname+"./public/"));
@@ -79,7 +81,7 @@ const uploadPostData = (req, res, next) => {
 // eslint-disable-next-line max-len
 /** ********************************************************** CURD ************************************************************************* **/
 
-// Get All Customers,Search by firstName and lastName
+// Get All Archotects,Search by firstName and lastName
 router.get('/', function(req, res, next) {
   const firstName = req.query.FirstName;
   const lastName = req.query.LastName;
@@ -161,12 +163,6 @@ router.post('/Add', uploadPostData, async function(req, res, next) {
   } else {
     Architect.create(newArchitect, function(err, architect) {
       if (err) throw err;
-      sendConfirmationEmail(
-          newArchitect.Email,
-          newArchitect.Username,
-          architect._id,
-          'Architect',
-      );
       res.send(architect._id);
     });
   }
@@ -222,7 +218,7 @@ router.put(
     },
 );
 
-// Delete Customer By id
+// Delete Architect By id
 router.delete('/remove/:id', async function(req, res, next) {
   Architect.findByIdAndRemove(
       req.params.id,
@@ -235,7 +231,7 @@ router.delete('/remove/:id', async function(req, res, next) {
   );
 });
 
-// Delete All Customers
+// Delete All Archotects
 router.delete('/remove', function(req, res, next) {
   Architect.deleteMany({})
       .then((data) => {
@@ -251,7 +247,7 @@ router.delete('/remove', function(req, res, next) {
       });
 });
 
-// Update Password Customer
+// Update Password Architect
 router.put('/updatePassword/:id', async function(req, res, next) {
   const {currentPassword, password} = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -281,7 +277,7 @@ router.put('/updatePassword/:id', async function(req, res, next) {
   }
 });
 
-// Disable Account Customer
+// Disable Account Architect
 router.put('/DisableAccount/:id', async function(req, res, next) {
   const {passwordD} = req.body;
   try {

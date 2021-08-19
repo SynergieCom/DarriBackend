@@ -18,7 +18,7 @@ const Twilio = require('twilio');
 const authToken = process.env.TWILIO_ACCOUNT_SID;
 // eslint-disable-next-line no-unused-vars
 const clientSMS = new Twilio('AC1c4a7e63a7c65e00cde37b7e422f4724', authToken);
-const {paymentDetailsEmail} = require('../mailer');
+const {paymentDetailsEmail, sendConfirmationEmail} = require('../mailer');
 
 // Search Payments By NameOnCard and PaymentMethod
 router.get('/', function(req, res, next) {
@@ -45,25 +45,25 @@ router.get('/:id', function(req, res, next) {
 
 // Pay (Architect,Engineer,Promoter)
 router.post('/addPayment/:id', async function(req, res, next) {
-  // const obj = JSON.parse(JSON.stringify(req.body));
+  const obj = JSON.parse(JSON.stringify(req.body));
   // const amount = req.query.amount;
-  const role = req.body.Role;
+  const role = obj.Role;
   const newPayment = {
-    PaymentMethod: req.body.PaymentMethod,
-    NameOnCard: req.body.NameOnCard,
-    Email: req.body.Email,
+    PaymentMethod: obj.PaymentMethod,
+    NameOnCard: obj.NameOnCard,
+    Email: obj.Email,
     Address: {
-      Street: req.body.Address.Street,
-      City: req.body.Address.City,
-      State: req.body.Address.State,
-      ZipCode: req.body.Address.ZipCode,
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-    creditCard: req.body.creditCard,
-    CardType: req.body.CardType,
-    SecurityCode: req.body.SecurityCode,
-    ExpirationDate: req.body.ExpirationDate,
-    Country: req.body.Country,
-    Amount: req.body.Amount,
+    creditCard: obj.creditCard,
+    CardType: obj.CardType,
+    SecurityCode: obj.SecurityCode,
+    ExpirationDate: obj.ExpirationDate,
+    Country: obj.Country,
+    Amount: obj.Amount,
     CreationDate: new Date(),
   };
 
@@ -84,16 +84,22 @@ router.post('/addPayment/:id', async function(req, res, next) {
                 await paymentDetailsEmail(
                     architect.Email,
                     architect.Username,
-                    req.body.Amount,
-                    req.body.NameOnCard,
-                    req.body.creditCard,
+                    obj.Amount,
+                    obj.NameOnCard,
+                    obj.creditCard,
+                );
+                await sendConfirmationEmail(
+                    architect.Email,
+                    architect.Username,
+                    architect._id,
+                    'Architect',
                 );
                 // Send Sms
                 // clientSMS.messages
                 //   .create({
                 // eslint-disable-next-line max-len
                 // eslint-disable-next-line max-len
-                //   body: `Congrats! ${architect.Username} your payed ${req.body.Amount}`,
+                //   body: `Congrats! ${architect.Username} your payed ${obj.Amount}`,
                 // to: '+21620566666', // Text this number
                 //  from: '+14079179267', // From a valid Twilio number
                 // })
@@ -117,9 +123,9 @@ router.post('/addPayment/:id', async function(req, res, next) {
                 await paymentDetailsEmail(
                     engineer.Email,
                     engineer.Username,
-                    req.body.Amount,
-                    req.body.NameOnCard,
-                    req.body.creditCard,
+                    obj.Amount,
+                    obj.NameOnCard,
+                    obj.creditCard,
                 );
                 // Send Sms
                 // clientSMS.messages
@@ -150,9 +156,9 @@ router.post('/addPayment/:id', async function(req, res, next) {
                 await paymentDetailsEmail(
                     promoter.Email,
                     promoter.Denomination,
-                    req.body.Amount,
-                    req.body.NameOnCard,
-                    req.body.creditCard,
+                    obj.Amount,
+                    obj.NameOnCard,
+                    obj.creditCard,
                 );
                 // Send Sms
                 // clientSMS.messages
