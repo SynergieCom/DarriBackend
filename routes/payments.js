@@ -127,6 +127,12 @@ router.post('/addPayment/:id', async function(req, res, next) {
                     obj.NameOnCard,
                     obj.creditCard,
                 );
+                await sendConfirmationEmail(
+                    engineer.Email,
+                    engineer.Username,
+                    engineer._id,
+                    'Engineer',
+                );
                 // Send Sms
                 // clientSMS.messages
                 //    .create({
@@ -159,6 +165,12 @@ router.post('/addPayment/:id', async function(req, res, next) {
                     obj.Amount,
                     obj.NameOnCard,
                     obj.creditCard,
+                );
+                await sendConfirmationEmail(
+                    promoter.Email,
+                    promoter.Username,
+                    promoter._id,
+                    'Promoter',
                 );
                 // Send Sms
                 // clientSMS.messages

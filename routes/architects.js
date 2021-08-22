@@ -4,7 +4,6 @@ const router = express.Router();
 const Architect = require('../models/ArchitectModel');
 const User = require('../models/UserModel').UserSchema;
 
-const {sendConfirmationEmail} = require('../mailer');
 const bcrypt = require('bcrypt');
 
 const multer = require('multer');
