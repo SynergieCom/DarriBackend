@@ -168,7 +168,7 @@ router.post('/addPayment/:id', async function(req, res, next) {
                 );
                 await sendConfirmationEmail(
                     promoter.Email,
-                    promoter.Username,
+                    promoter.Denomination,
                     promoter._id,
                     'Promoter',
                 );

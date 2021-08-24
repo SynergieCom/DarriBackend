@@ -3,11 +3,13 @@ const express = require('express');
 const router = express.Router();
 const Promoter = require('../models/PromoterModel');
 const User = require('../models/UserModel').UserSchema;
-const {sendConfirmationEmail} = require('../mailer');
 const bcrypt = require('bcrypt');
 
 const multer = require('multer');
 const path = require('path');
+const {LocalStorage} = require('node-localstorage');
+const Architect = require('../models/ArchitectModel');
+
 router.use(express.static(__dirname + './public/'));
 // router.use(express.static(__dirname+"./public/"));
 if (typeof localStorage === 'undefined' || localStorage === null) {
@@ -23,7 +25,6 @@ const Storage = multer.diskStorage({
 const upload = multer({
   storage: Storage,
 }).single('img');
-
 // eslint-disable-next-line max-len
 /** ********************************************************** CURD ************************************************************************* **/
 
@@ -62,33 +63,33 @@ router.get('/:id', function(req, res, next) {
 
 // Add Promoter
 router.post('/', upload, async function(req, res, next) {
-  // const obj = JSON.parse(JSON.stringify(req.body));
-  // console.log('Obj', obj);
+  const obj = JSON.parse(JSON.stringify(req.body));
+  console.log('Obj', obj);
   const hashedPassword = await bcrypt.hash(req.body.Password, 10);
   const newPromoter = {
-    ResponsibleCin: req.body.ResponsibleCin,
-    ResponsibleName: req.body.ResponsibleName,
-    CreationYear: req.body.CreationYear,
-    CommercialName: req.body.CommercialName,
-    Activity: req.body.Activity,
+    ResponsibleCin: obj.ResponsibleCin,
+    ResponsibleName: obj.ResponsibleName,
+    CreationYear: obj.CreationYear,
+    CommercialName: obj.CommercialName,
+    Activity: obj.Activity,
     HeadquartersAddress: {
-      Street: req.body.HeadquartersAddress.Street,
-      City: req.body.HeadquartersAddress.City,
-      State: req.body.HeadquartersAddress.State,
-      ZipCode: req.body.HeadquartersAddress.ZipCode,
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-    RegisterStatus: req.body.RegisterStatus,
-    RegionalOffice: req.body.RegionalOffice,
-    Denomination: req.body.Denomination,
-    TaxSituation: req.body.TaxSituation,
-    Email: req.body.Email,
+    RegisterStatus: obj.RegisterStatus,
+    RegionalOffice: obj.RegionalOffice,
+    Denomination: obj.Denomination,
+    TaxSituation: obj.TaxSituation,
+    Email: obj.Email,
     Password: hashedPassword,
-    PhoneNumber: req.body.PhoneNumber,
+    PhoneNumber: obj.PhoneNumber,
     Subscribed: false,
     SubscriptionExpirationDate: new Date(),
     Payments: [],
     Packages: [],
-    img: req.body.img /* file.filename*/,
+    img: req.file.filename,
   };
 
   const Denomination = await Promoter.find({
@@ -118,11 +119,6 @@ router.post('/', upload, async function(req, res, next) {
   } else {
     Promoter.create(newPromoter, function(err, company) {
       if (err) throw err;
-      sendConfirmationEmail(
-          newPromoter.Email,
-          newPromoter.Denomination,
-          company._id,
-      );
       res.send(company._id);
     });
   }
@@ -244,6 +240,15 @@ router.put('/DisableAccount/:id', async function(req, res, next) {
   } catch (error) {
     res.send(error);
   }
+});
+
+// Update Architect Subscription
+router.put('/UpdateSubscription/:id', function(req, res, next) {
+  Promoter.findByIdAndUpdate(req.params.id, req.body, function(err, data) {
+    if (err) throw err;
+    console.log('UPDATED');
+    res.send('UPDATED OK');
+  });
 });
 
 module.exports = router;
