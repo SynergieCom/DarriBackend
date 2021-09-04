@@ -77,6 +77,19 @@ const uploadPostData = (req, res, next) => {
   });
 };
 
+const Storage2 = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+// eslint-disable-next-line no-unused-vars
+const upload2 = multer({
+  storage: Storage2,
+}).single('img');
+
+
 // eslint-disable-next-line max-len
 /** ********************************************************** CURD ************************************************************************* **/
 
@@ -169,53 +182,50 @@ router.post('/Add', uploadPostData, async function(req, res, next) {
 
 //  Update Architect
 // eslint-disable-next-line max-len
-router.put(
-    '/update/:id',
-    upload.array('imgCollection', 6),
-    function(req, res, next) {
-      const obj = JSON.parse(JSON.stringify(req.body));
-      console.log('-> req.body', req.body);
-      console.log('-> obj', obj);
-      const newArchitect = {
-        Username: req.body.Username,
-        Cin: req.body.Cin,
-        FirstName: req.body.FirstName,
-        LastName: req.body.LastName,
-        Email: req.body.Email,
-        PhoneNumber: req.body.PhoneNumber,
-        Address: {
-          Street: req.body.Address.Street,
-          City: req.body.Address.City,
-          State: req.body.Address.State,
-          ZipCode: req.body.Address.ZipCode,
-        },
-        Role: req.body.Role,
-        img: req.files.img,
-        NationalEngineeringId: req.body.NationalEngineeringId,
-        Bio: req.body.Bio,
-        Type: req.body.Type,
-        NbExperienceYears: req.body.NbExperienceYears,
-        Cv: req.files.cv,
-      };
-      Architect.findByIdAndUpdate(
-          req.params.id,
-          newArchitect,
-          async function(err, data) {
-            if (err) throw err;
-            await User.findOneAndUpdate(
-                {RefUser: req.params.id},
-                {
-                  Username: newArchitect.Username,
-                  Email: newArchitect.Email,
-                  img: newArchitect.img,
-                },
-            );
-            console.log('UPDATED');
-            res.send('UPDATED OK');
-          },
-      );
+router.put('/update/:id', upload2, function(req, res, next) {
+  const obj = JSON.parse(JSON.stringify(req.body));
+  console.log('-> req.body', req.body);
+  console.log('-> obj', obj);
+  const newArchitect = {
+    Username: obj.Username,
+    Cin: obj.Cin,
+    FirstName: obj.FirstName,
+    LastName: obj.LastName,
+    Email: obj.Email,
+    PhoneNumber: obj.PhoneNumber,
+    Address: {
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-);
+    Role: obj.Role,
+    img: req.file.filename,
+    Gender: obj.Gender,
+    DayOfBirth: obj.DayOfBirth,
+    NationalEngineeringId: obj.NationalEngineeringId,
+    Bio: obj.Bio,
+    Type: obj.Type,
+    NbExperienceYears: obj.NbExperienceYears,
+  };
+  Architect.findByIdAndUpdate(
+      req.params.id,
+      newArchitect,
+      async function(err, data) {
+        if (err) throw err;
+        await User.findOneAndUpdate(
+            {RefUser: req.params.id},
+            {
+              Username: newArchitect.Username,
+              Email: newArchitect.Email,
+              img: newArchitect.img,
+            },
+        );
+        console.log('UPDATED');
+        res.send('UPDATED OK');
+      },
+  );
+});
 
 // Delete Architect By id
 router.delete('/remove/:id', async function(req, res, next) {

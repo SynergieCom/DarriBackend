@@ -117,19 +117,19 @@ router.put('/update/:id', upload, function(req, res, next) {
   console.log('-> req.body', req.body);
   console.log('-> obj', obj);
   const newCustomer = {
-    Username: req.body.Username,
-    Cin: req.body.Cin,
-    FirstName: req.body.FirstName,
-    LastName: req.body.LastName,
-    Email: req.body.Email,
-    PhoneNumber: req.body.PhoneNumber,
+    Username: obj.Username,
+    Cin: obj.Cin,
+    FirstName: obj.FirstName,
+    LastName: obj.LastName,
+    Email: obj.Email,
+    PhoneNumber: obj.PhoneNumber,
     Address: {
-      Street: req.body.Address.Street,
-      City: req.body.Address.City,
-      State: req.body.Address.State,
-      ZipCode: req.body.Address.ZipCode,
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-    img: req.body.img /* file.filename*/,
+    img: req.file.filename,
   };
   Customer.findByIdAndUpdate(
       req.params.id,
