@@ -20,6 +20,8 @@ const Promoter = new Schema({
   Subscribed: Boolean,
   SubscriptionExpirationDate: Date,
   img: String,
+  Role: String,
+  ActiveDate: Date,
   Projects: [
     {
       type: Schema.Types.ObjectId,

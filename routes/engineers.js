@@ -46,6 +46,19 @@ const storage = multer.diskStorage({
   },
 });
 
+const Storage2 = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+// eslint-disable-next-line no-unused-vars
+const upload2 = multer({
+  storage: Storage2,
+}).single('img');
+
+
 const fileFilter = (req, file, cb) => {
   if (
     file.mimetype === 'image/jpeg' ||
@@ -124,6 +137,9 @@ router.post('/Add', uploadPostData, async function(req, res, next) {
     },
     Role: obj.Role,
     img: req.files.img[0].filename,
+    ActiveDate: Date(),
+    Gender: obj.Gender,
+    DayOfBirth: obj.DayOfBirth,
     NationalEngineeringId: obj.NationalEngineeringId,
     Bio: obj.Bio,
     Speciality: obj.Speciality,
@@ -162,7 +178,7 @@ router.post('/Add', uploadPostData, async function(req, res, next) {
 });
 
 //  Update Engineer
-router.put('/update/:id', uploadPostData, function(req, res, next) {
+router.put('/update/:id', upload2, function(req, res, next) {
   const obj = JSON.parse(JSON.stringify(req.body));
   console.log('-> req.body', req.body);
   console.log('-> obj', obj);
@@ -181,11 +197,12 @@ router.put('/update/:id', uploadPostData, function(req, res, next) {
     },
     Role: obj.Role,
     img: req.files.img[0].filename,
+    Gender: obj.Gender,
+    DayOfBirth: obj.DayOfBirth,
     NationalEngineeringId: obj.NationalEngineeringId,
     Bio: obj.Bio,
     Speciality: obj.Speciality,
     NbExperienceYears: obj.NbExperienceYears,
-    Cv: req.files.cv[0].filename,
   };
   Engineer.findByIdAndUpdate(
       req.params.id,

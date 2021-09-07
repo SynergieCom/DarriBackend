@@ -7,8 +7,6 @@ const bcrypt = require('bcrypt');
 
 const multer = require('multer');
 const path = require('path');
-const {LocalStorage} = require('node-localstorage');
-const Architect = require('../models/ArchitectModel');
 
 router.use(express.static(__dirname + './public/'));
 // router.use(express.static(__dirname+"./public/"));
@@ -87,9 +85,11 @@ router.post('/', upload, async function(req, res, next) {
     PhoneNumber: obj.PhoneNumber,
     Subscribed: false,
     SubscriptionExpirationDate: new Date(),
+    Role: 'Promoter',
+    img: req.file.filename,
+    ActiveDate: Date(),
     Payments: [],
     Packages: [],
-    img: req.file.filename,
   };
 
   const Denomination = await Promoter.find({
@@ -126,27 +126,26 @@ router.post('/', upload, async function(req, res, next) {
 
 // Update Prompter
 router.put('/update/:id', upload, function(req, res, next) {
-  // const obj = JSON.parse(JSON.stringify(req.body));
-  // console.log('Company : ', obj);
+  const obj = JSON.parse(JSON.stringify(req.body));
   const newPromoter = {
-    ResponsibleCin: req.body.ResponsibleCin,
-    ResponsibleName: req.body.ResponsibleName,
-    CreationYear: req.body.CreationYear,
-    CommercialName: req.body.CommercialName,
-    Activity: req.body.Activity,
+    ResponsibleCin: obj.ResponsibleCin,
+    ResponsibleName: obj.ResponsibleName,
+    CreationYear: obj.CreationYear,
+    CommercialName: obj.CommercialName,
+    Activity: obj.Activity,
     HeadquartersAddress: {
-      Street: req.body.HeadquartersAddress.Street,
-      City: req.body.HeadquartersAddress.City,
-      State: req.body.HeadquartersAddress.State,
-      ZipCode: req.body.HeadquartersAddress.ZipCode,
+      Street: obj.Street,
+      City: obj.City,
+      State: obj.State,
+      ZipCode: obj.ZipCode,
     },
-    RegisterStatus: req.body.RegisterStatus,
-    RegionalOffice: req.body.RegionalOffice,
-    Denomination: req.body.Denomination,
-    TaxSituation: req.body.TaxSituation,
-    Email: req.body.Email,
-    PhoneNumber: req.body.PhoneNumber,
-    img: req.body.img /* file.filename*/,
+    RegisterStatus: obj.RegisterStatus,
+    RegionalOffice: obj.RegionalOffice,
+    Denomination: obj.Denomination,
+    TaxSituation: obj.TaxSituation,
+    Email: obj.Email,
+    PhoneNumber: obj.PhoneNumber,
+    img: req.file.filename,
   };
   Promoter.findByIdAndUpdate(
       req.params.id,
